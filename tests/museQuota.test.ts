@@ -54,12 +54,26 @@ describe('Muse quota parsing', () => {
     expect(JSON.stringify(parsed)).not.toContain('LLM|');
   });
 
-  test('rejects inactive subscriptions and empty usage', () => {
+  test('rejects inactive subscriptions and unusable bodies', () => {
     const inactive = parseMuseKeyPayload(keyResponse({ is_subs_active: false }));
     expect(inactive?.active).toBeFalse();
-    expect(parseMuseKeyPayload(keyResponse({ subs_usage: null }))).toBeNull();
-    expect(parseMuseKeyPayload(keyResponse({ subs_usage: {} }))).toBeNull();
     expect(parseMuseKeyPayload('not-json')).toBeNull();
+    expect(parseMuseKeyPayload(null)).toBeNull();
+    expect(parseMuseKeyPayload([])).toBeNull();
+  });
+
+  test('keeps tier and identity when Meta reports no usage windows', () => {
+    // Live shape on tiers without windows: active subscription, no subs_usage.
+    const { subs_usage: _dropped, ...withoutUsage } = keyResponse();
+    void _dropped;
+    const parsed = parseMuseKeyPayload(withoutUsage);
+    expect(parsed).not.toBeNull();
+    expect(parsed?.active).toBeTrue();
+    expect(parsed?.tier).toBe('High');
+    expect(parsed?.email).toBe('muse@example.com');
+    expect(parsed?.windows).toEqual([]);
+    expect(parseMuseKeyPayload(keyResponse({ subs_usage: null }))).not.toBeNull();
+    expect(parseMuseKeyPayload(keyResponse({ subs_usage: {} }))?.windows).toEqual([]);
   });
 
   test('tolerates string numbers and missing timestamps', () => {
@@ -100,6 +114,7 @@ describe('Muse quota wiring', () => {
       'title',
       'refresh_button',
       'empty_data',
+      'no_windows',
       'weekly',
       'rolling_window_hours',
       'subscription_tier',
@@ -163,5 +178,14 @@ describe('Muse quota page wiring', () => {
       expect(typeof state[adapter.storeSetter]).toBe('function');
     }
     expect(QUOTA_TAB_ORDER).toContain('muse');
+  });
+});
+
+describe('Muse empty-payload guard', () => {
+  test('degenerate bodies without windows or identity still error', async () => {
+    const { parseMuseKeyPayload } = await import('../src/utils/quota/muse');
+    expect(parseMuseKeyPayload({})).toBeNull();
+    expect(parseMuseKeyPayload({ is_subs_active: true })).toBeNull();
+    expect(parseMuseKeyPayload({ subs_usage: null })).toBeNull();
   });
 });

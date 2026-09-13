@@ -108,7 +108,13 @@ const asRecord = (value: unknown): Record<string, unknown> | null =>
     ? (value as Record<string, unknown>)
     : null;
 
-/** Parse the key-endpoint JSON into quota data. Returns null when unusable. */
+/** Parse the key-endpoint JSON into quota data. Null only when unusable.
+ *
+ * Meta does not always report usage windows: active subscriptions (observed
+ * on the Everyday Usage tier) can return tier and identity with no
+ * subs_usage at all. That still parses — with zero windows — so the panel
+ * shows what is known instead of erroring.
+ */
 export function parseMuseKeyPayload(payload: unknown): MuseQuotaData | null {
   const root = asRecord(payload);
   if (!root) return null;
@@ -133,16 +139,23 @@ export function parseMuseKeyPayload(payload: unknown): MuseQuotaData | null {
       windows.push(weekly);
     }
   }
-  if (windows.length === 0) return null;
+  // No windows is not a failure: Meta omits subs_usage entirely for some
+  // active subscriptions, and the tier/identity below is still worth showing.
   const tierRaw = root.subs_tier_name ?? root.subs_tier_id;
   const emailRaw = root.user_email;
+  const tier =
+    typeof tierRaw === 'string' && tierRaw.trim() ? tierRaw.trim() : undefined;
+  const email =
+    typeof emailRaw === 'string' && emailRaw.trim()
+      ? emailRaw.trim().toLowerCase()
+      : undefined;
+  // A body with no windows and no identity is degenerate (e.g. an empty
+  // object), not a windowless subscription — keep erroring on those.
+  if (windows.length === 0 && tier === undefined && email === undefined) return null;
   return {
     active: root.is_subs_active !== false,
-    tier: typeof tierRaw === 'string' && tierRaw.trim() ? tierRaw.trim() : undefined,
-    email:
-      typeof emailRaw === 'string' && emailRaw.trim()
-        ? emailRaw.trim().toLowerCase()
-        : undefined,
+    tier,
+    email,
     windows,
   };
 }

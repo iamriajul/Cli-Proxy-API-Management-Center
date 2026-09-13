@@ -509,7 +509,8 @@
     "rolling_window_minutes": "Rolling window ({{count}}m)",
     "subscription_tier": "Subscription: {{tier}}",
     "rate_limited": "Meta rate-limited the quota check; wait a few minutes and retry",
-    "inactive_subscription": "Muse subscription is inactive"
+    "inactive_subscription": "Muse subscription is inactive",
+    "no_windows": "Meta reports no usage windows for this subscription"
   },
   "opencode_quota": {
     "title": "OpenCode Quota",

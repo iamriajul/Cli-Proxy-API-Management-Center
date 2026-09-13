@@ -47,7 +47,11 @@ Quota page, auth-file cards, and timeline lanes cover muse files via a
 dedicated adapter: the key endpoint is proxied through the backend api-call
 with the stored account token (empty probe body, no re-onboarding), and only
 percent/tier/identity fields are kept — the minted api_key is never stored or
-rendered. 429s surface a retry-later message instead of a raw error.
+rendered. 429s surface a retry-later message instead of a raw error. Meta
+omits subs_usage entirely for some active subscriptions (observed live on
+the Everyday Usage tier, intermittently — windows come and go between
+probes): that parses to a success state showing tier plus a
+no-windows note, never an error.
 
 ```bash
 grep -q "muse: { ...MUSE_CONFIG" src/features/quota/providers/index.ts

@@ -509,7 +509,8 @@
     "rolling_window_minutes": "滾動視窗（{{count}} 分鐘）",
     "subscription_tier": "訂閱等級：{{tier}}",
     "rate_limited": "Meta 限制了配額查詢頻率，請稍後再試",
-    "inactive_subscription": "Muse 訂閱未啟用"
+    "inactive_subscription": "Muse 訂閱未啟用",
+    "no_windows": "Meta 未回傳該訂閱的用量視窗"
   },
   "opencode_quota": {
     "title": "OpenCode 配額",

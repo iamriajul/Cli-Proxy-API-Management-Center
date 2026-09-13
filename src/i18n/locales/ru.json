@@ -508,7 +508,8 @@
     "rolling_window_minutes": "Скользящее окно ({{count}} мин)",
     "subscription_tier": "Подписка: {{tier}}",
     "rate_limited": "Meta ограничила частоту проверки квоты; повторите позже",
-    "inactive_subscription": "Подписка Muse неактивна"
+    "inactive_subscription": "Подписка Muse неактивна",
+    "no_windows": "Meta не возвращает окна использования для этой подписки"
   },
   "opencode_quota": {
     "title": "Квота OpenCode",

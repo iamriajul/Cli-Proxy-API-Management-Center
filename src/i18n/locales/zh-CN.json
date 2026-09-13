@@ -509,7 +509,8 @@
     "rolling_window_minutes": "滚动窗口（{{count}} 分钟）",
     "subscription_tier": "订阅档位：{{tier}}",
     "rate_limited": "Meta 限制了额度查询频率，请稍后再试",
-    "inactive_subscription": "Muse 订阅未激活"
+    "inactive_subscription": "Muse 订阅未激活",
+    "no_windows": "Meta 未返回该订阅的用量窗口"
   },
   "opencode_quota": {
     "title": "OpenCode 额度",

@@ -23,7 +23,18 @@ export function MuseQuotaBody({ quota, classes }: QuotaBodyProps<MuseQuotaState>
   const rows = quota.rows ?? [];
 
   if (rows.length === 0) {
-    return <div className={classes.quotaMessage}>{t('muse_quota.empty_data')}</div>;
+    // Meta omits usage windows for some active subscriptions: show what is
+    // known (tier) plus an explanatory note instead of an error state.
+    return (
+      <>
+        {quota.tier && (
+          <div className={classes.quotaMessage}>
+            {t('muse_quota.subscription_tier', { tier: quota.tier })}
+          </div>
+        )}
+        <div className={classes.quotaMessage}>{t('muse_quota.no_windows')}</div>
+      </>
+    );
   }
 
   return (
